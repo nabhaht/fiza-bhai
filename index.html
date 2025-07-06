@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIZA - Google Drive File Manager</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="logo">
+      <h2>FIZA</h2>
+    </div>
+    <ul class="nav-links">
+      <li class="active"><a href="#"><i class="fas fa-home"></i> My Drive</a></li>
+      <li><a href="#"><i class="fas fa-clock"></i> Recent</a></li>
+      <li><a href="#"><i class="fas fa-star"></i> Starred</a></li>
+      <li><a href="#"><i class="fas fa-share-alt"></i> Shared with me</a></li>
+      <li><a href="#"><i class="fas fa-trash"></i> Trash</a></li>
+      <li class="divider"></li>
+      <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+  </nav>
+
+  <main class="main-content">
+    <header>
+      <div class="menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+      <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" placeholder="Search in Drive...">
+        <button id="searchButton" class="btn">Search</button>
+      </div>
+      <div class="auth-buttons">
+        <button id="authorizeButton" class="btn primary" style="display:none;">Sign In with Google</button>
+        <button id="signoutButton" class="btn secondary" style="display:none;">Sign Out</button>
+      </div>
+    </header>
+
+    <div id="content" style="display:none;">
+      <div class="upload-section">
+        <input type="file" id="fileInput" class="file-input">
+        <button id="uploadButton" class="btn upload-btn"><i class="fas fa-cloud-upload-alt"></i> Upload File</button>
+      </div>
+
+      <div id="loading" class="loading-spinner" style="display:none;">
+        <div class="spinner"></div>
+      </div>
+      
+      <div class="file-view-header">
+        <h2>My Files</h2>
+        <div class="view-controls">
+          <button class="view-btn grid-view active"><i class="fas fa-th-large"></i></button>
+          <button class="view-btn list-view"><i class="fas fa-list"></i></button>
+        </div>
+      </div>
+      
+      <div id="fileList" class="file-list"></div>
+    </div>
+  </main>
+
+  <!-- Google API libraries -->
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script src="https://accounts.google.com/gsi/client"></script>
+  
+  <!-- Application scripts -->
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="fileManager.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
