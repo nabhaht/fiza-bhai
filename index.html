@@ -3,72 +3,280 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FIZA - Google Drive File Manager</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Google Drive File Manager</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4285f4;
+      --secondary-color: #fbbc05;
+      --accent-color: #34a853;
+      --danger-color: #ea4335;
+      --text-color: #3c4043;
+      --text-light: #5f6368;
+      --bg-color: #f8f9fa;
+      --bg-card: #ffffff;
+      --border-color: #dadce0;
+      --shadow-sm: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+      --shadow-md: 0 2px 6px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--bg-color);
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 4px;
+      color: white;
+      z-index: 1000;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: opacity 0.3s ease;
+    }
+
+    .notification.error {
+      background-color: var(--danger-color);
+    }
+
+    .notification.success {
+      background-color: var(--accent-color);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .btn.primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn.primary:hover {
+      background-color: #3367d6;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn.secondary {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn.secondary:hover {
+      background-color: #e8eaed;
+    }
+
+    .upload-section {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+
+    .file-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      padding: 40px 0;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(66, 133, 244, 0.2);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .files-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .file-card {
+      background-color: var(--bg-card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .file-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .file-icon {
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f5f5f5;
+      overflow: hidden;
+    }
+
+    .file-thumbnail {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .file-details {
+      padding: 12px;
+    }
+
+    .file-name {
+      font-weight: 500;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 8px;
+      padding: 0 12px 12px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 6px 0;
+      background-color: var(--bg-color);
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .action-btn:hover {
+      background-color: #e8eaed;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+      background-color: var(--bg-card);
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: var(--border-color);
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      max-width: 500px;
+    }
+
+    #searchInput {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-  <nav class="sidebar">
-    <div class="logo">
-      <h2>FIZA</h2>
-    </div>
-    <ul class="nav-links">
-      <li class="active"><a href="#"><i class="fas fa-home"></i> My Drive</a></li>
-      <li><a href="#"><i class="fas fa-clock"></i> Recent</a></li>
-      <li><a href="#"><i class="fas fa-star"></i> Starred</a></li>
-      <li><a href="#"><i class="fas fa-share-alt"></i> Shared with me</a></li>
-      <li><a href="#"><i class="fas fa-trash"></i> Trash</a></li>
-      <li class="divider"></li>
-      <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-    </ul>
-  </nav>
-
-  <main class="main-content">
+  <div class="container">
     <header>
-      <div class="menu-toggle">
-        <i class="fas fa-bars"></i>
-      </div>
-      <div class="search-container">
-        <i class="fas fa-search search-icon"></i>
-        <input type="text" id="searchInput" placeholder="Search in Drive...">
-        <button id="searchButton" class="btn">Search</button>
-      </div>
+      <h1>Google Drive File Manager</h1>
       <div class="auth-buttons">
         <button id="authorizeButton" class="btn primary" style="display:none;">Sign In with Google</button>
         <button id="signoutButton" class="btn secondary" style="display:none;">Sign Out</button>
       </div>
     </header>
 
+    <div id="errorMessage" style="display:none;" class="notification error"></div>
+    <div id="successMessage" style="display:none;" class="notification success"></div>
+
     <div id="content" style="display:none;">
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search in Drive...">
+        <button id="searchButton" class="btn primary">Search</button>
+      </div>
+
       <div class="upload-section">
         <input type="file" id="fileInput" class="file-input">
-        <button id="uploadButton" class="btn upload-btn"><i class="fas fa-cloud-upload-alt"></i> Upload File</button>
+        <button id="uploadButton" class="btn primary"><i class="fas fa-cloud-upload-alt"></i> Upload</button>
       </div>
 
       <div id="loading" class="loading-spinner" style="display:none;">
         <div class="spinner"></div>
       </div>
       
-      <div class="file-view-header">
-        <h2>My Files</h2>
-        <div class="view-controls">
-          <button class="view-btn grid-view active"><i class="fas fa-th-large"></i></button>
-          <button class="view-btn list-view"><i class="fas fa-list"></i></button>
-        </div>
-      </div>
-      
+      <h2>My Files</h2>
       <div id="fileList" class="file-list"></div>
     </div>
-  </main>
+  </div>
 
   <!-- Google API libraries -->
   <script src="https://apis.google.com/js/api.js"></script>
   <script src="https://accounts.google.com/gsi/client"></script>
   
-  <!-- Application scripts -->
-  <script src="js/auth.js"></script>
+  <!-- Application scripts - CORRECT ORDER IS IMPORTANT -->
+  <script src="js/logger.js"></script>
   <script src="js/ui.js"></script>
-  <script src="fileManager.js"></script>
   <script src="js/app.js"></script>
+  <script src="fileManager.js"></script>
 </body>
 </html>
